@@ -48,11 +48,16 @@ const Register = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    registerMutation.mutate({
-      name: formData.name,
-      email: formData.email,
-      password: formData.password,
-    });
+    try {
+      registerMutation.mutate({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+      });
+      router.push("/verification")
+    } catch (error) {
+      console.error("Error in registering the user")
+    }
   };
 
   return (
