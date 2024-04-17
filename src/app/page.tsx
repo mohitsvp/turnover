@@ -1,23 +1,59 @@
-import Card from "./_components/Card";
+"use client"
 
-export default async function Home() {
+import { useState } from "react";
+import Card from "./_components/Card";
+import CheckboxList from "./_components/CheckboxList";
+
+interface Interest {
+  id: number;
+  label: string;
+  checked: boolean;
+}
+
+
+export default function Home() {
+
+  const [interests, setInterests] = useState<Interest[]>([
+    { id: 1, label: 'Shoes', checked: false },
+    { id: 2, label: 'Hats', checked: false },
+    { id: 3, label: 'Watches', checked: false },
+    // Add more interests as needed
+  ]);
+
+  const handleCheckboxChange = (index: number) => (isChecked: boolean) => {
+    const newInterests = interests.map((interest, i) => {
+      if (i === index) {
+        return { ...interest, checked: isChecked };
+      }
+      return interest;
+    });
+    setInterests(newInterests);
+    console.log(`Toggled ${interests[index]?.label}, checked: ${isChecked}`);
+  };
+
   return (
-    <main className="">
-      <div>
-        <Card>
-          <div>
-            <h1 className="text-[32px] font-bold">
-              Please mark your interests!
-            </h1>
+    <main>
+      <Card>
+        <div>
+          <h1 className="text-[32px] font-bold">Please mark your interests!</h1>
+        </div>
+        <div className="my-[40px]">
+          <p>We will keep you notified.</p>
+        </div>
+        <div className="text-left">
+          <p>My saved interests!</p>
+          <div className="my-[20px]">
+            {interests.map((interest, index) => (
+              <CheckboxList
+                key={interest.id}
+                label={interest.label}
+                checked={interest.checked}
+                onChange={handleCheckboxChange(index)}
+              />
+            ))}
           </div>
-          <div className="my-[40px]">
-            <p>We will keep you notified.</p>
-          </div>
-          <div className="text-left">
-            <p>My saved interests!</p>
-          </div>
-        </Card>
-      </div>
+        </div>
+      </Card>
     </main>
   );
 }
