@@ -24,6 +24,8 @@ model User {
   name          String           @db.VarChar(255)
   email         String           @unique @db.VarChar(255)
   password      String           @db.VarChar(255)
+  otp           String?
+  otpExpiresAt  DateTime?
   emailVerified Boolean          @default(false)
   categories    UserCategories[]
   createdAt     DateTime         @default(now())

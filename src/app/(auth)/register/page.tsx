@@ -24,7 +24,7 @@ const Register = () => {
     password: '',
   });
   
-  const registerMutation = api.register.register.useMutation({
+  const registerMutation = api.auth.register.useMutation({
     onSuccess: () => {
       router.refresh();
       setFormData({

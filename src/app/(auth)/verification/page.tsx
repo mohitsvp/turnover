@@ -4,17 +4,28 @@ import Card from "@/app/_components/Card";
 import Promotional from "@/app/_components/Promotional";
 import Button from "@/app/_ui/Button";
 import OtpField from "@/app/_ui/OtpField";
+import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
 const Verification = () => {
   const [otp, setOtp] = useState("");
   const router = useRouter();
+  const email = "mohit.singhal@masaischool.com";
 
+  const verifyOtp = api.verify.verifyOtp.useMutation({
+    onSuccess: (data : {message : string}) => {
+      console.log(data.message)
+      router.push("/login")
+    },
+    onError: (error : any) => {
+      console.log("ERROR ", error)
+    }
+  })
+  
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    // console.log("COD ", otp)
-    router.push("/login")
+    verifyOtp.mutate({email, otp})
   };
 
   return (

@@ -4,6 +4,7 @@ import Card from "@/app/_components/Card";
 import Promotional from "@/app/_components/Promotional";
 import Button from "@/app/_ui/Button";
 import InputField from "@/app/_ui/InputField";
+import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
@@ -19,15 +20,38 @@ const page = () => {
   });
   const router = useRouter();
 
+  const loginMutation = api.auth.login.useMutation({
+    onSuccess: () => {
+      router.refresh();
+      setFormData({
+        email: '',
+        password: '',
+      })
+    },
+    onError: (error : any) => {
+      // Handle error here, for example showing a notification to the user
+      console.error("Login error:", error);
+    },
+  });
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(formData);
-    router.push("/")
+    try {
+      loginMutation.mutate({
+        email : formData.email,
+        password : formData.password
+      })
+      // console.log("Login success:", response);
+      console.log(formData);
+      router.push("/")
+    } catch (error) {
+      console.error("Login error", error)
+    }
   };
 
   return (

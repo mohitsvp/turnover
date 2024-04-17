@@ -8,12 +8,14 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-export const sendVerificationEmail = async (email: string, token: string) => {
-  const verificationUrl = `https://yourdomain.com/api/verify?token=${token}`;
+export const sendVerificationEmail = async (email: string, otp: string) => {
   await transporter.sendMail({
     from: `"Your App" <noreply@yourdomain.com>`,
     to: email,
     subject: 'Verify Your Email',
-    html: `Please click on the link to verify your email: <a href="${verificationUrl}">Verify Email</a>`,
+    html: `
+    <p>Please use the following One-Time Password (OTP) to verify your email:</p>
+    <p><b>${otp}</b></p>
+  `,
   });
 };
