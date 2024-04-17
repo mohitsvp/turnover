@@ -6,6 +6,8 @@ import Promotional from "@/app/_components/Promotional";
 import Button from "@/app/_ui/Button";
 import InputField from "@/app/_ui/InputField";
 import React, { useState } from "react";
+import { api } from "@/trpc/react";
+import { useRouter } from "next/navigation";
 
 export type FormData = {
   name: string;
@@ -13,13 +15,31 @@ export type FormData = {
   password: string;
 };
 
-const Register = () => {
 
+const Register = () => {
+  const router = useRouter();
   const [formData, setFormData] = useState<FormData>({
     name: '',
     email: '',
     password: '',
   });
+  
+  const registerMutation = api.register.register.useMutation({
+    onSuccess: () => {
+      router.refresh();
+      setFormData({
+        name: '',
+        email: '',
+        password: '',
+      })
+    },
+    onError: (error : any) => {
+      // Handle error here, for example showing a notification to the user
+      console.error("Registration error:", error);
+    },
+  });
+
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -28,7 +48,11 @@ const Register = () => {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(formData);
+    registerMutation.mutate({
+      name: formData.name,
+      email: formData.email,
+      password: formData.password,
+    });
   };
 
   return (
