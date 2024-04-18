@@ -34,7 +34,7 @@ const Register = () => {
         password: '',
       })
     },
-    onError: (error : any) => {
+    onError: (error) => {
       // Handle error here, for example showing a notification to the user
       console.error("Registration error:", error);
     },

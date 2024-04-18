@@ -10,6 +10,10 @@ export type User = {
   email: string;
 };
 
+type DecodedToken = {
+  user: User;
+};
+
 type AuthContextType = {
   user: User | null;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
@@ -28,10 +32,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   const [cookies] = useCookies(["authToken"]);
 
   useEffect(() => {
-    if (cookies.authToken) {
+    const authToken = cookies.authToken as string;
+    if (typeof authToken === 'string') {
       try {
-        const decoded = verifyToken(cookies.authToken);
-        if (typeof decoded === "object") {
+        const decoded = verifyToken(authToken) as DecodedToken;
+        if (decoded && 'user' in decoded) {
           const decodedUser: User = {
             id: decoded.user.id,
             name: decoded.user.name,
@@ -45,6 +50,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
     setIsLoading(false);
   }, [cookies.authToken]);
+  
 
   
 
