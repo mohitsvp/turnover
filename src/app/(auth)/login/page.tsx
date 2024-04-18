@@ -5,6 +5,7 @@ import Promotional from "@/app/_components/Promotional";
 import Button from "@/app/_ui/Button";
 import InputField from "@/app/_ui/InputField";
 import { api } from "@/trpc/react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 import { useCookies } from 'react-cookie';
@@ -50,8 +51,6 @@ const page = () => {
         password : formData.password
       })
 
-      console.log("Login success:", response);
-
       setCookie('authToken', response?.token, { path: '/' });
       router.push("/")
     } catch (error) {
@@ -96,7 +95,7 @@ const page = () => {
           </div>
           <div className="border my-8"></div>
           <div>
-            <p><span className="text-[#333333]">Don’t have an Account? </span> SIGNUP</p>
+            <p><span className="text-[#333333]">Don’t have an Account? </span> <Link href="/register">SIGNUP</Link></p>
           </div>
         </Card>
       </div>

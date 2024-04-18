@@ -8,6 +8,7 @@ import InputField from "@/app/_ui/InputField";
 import React, { useState } from "react";
 import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export type FormData = {
   name: string;
@@ -54,6 +55,7 @@ const Register = () => {
         email: formData.email,
         password: formData.password,
       });
+      localStorage.setItem("email", JSON.stringify(formData.email))
       router.push("/verification")
     } catch (error) {
       console.error("Error in registering the user")
@@ -97,7 +99,7 @@ const Register = () => {
           </Form>
         </div>
         <div>
-          <p><span className="text-[#333333]">Have an account?</span> LOGIN</p>
+          <p><span className="text-[#333333]">Have an account?</span> <Link href="/login">LOGIN</Link></p>
         </div>
       </Card>
     </div>

@@ -6,17 +6,8 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
-}
-
-model Post {
-  id        Int      @id @default(autoincrement())
-  name      String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([name])
 }
 
 model User {
@@ -24,7 +15,7 @@ model User {
   name          String           @db.VarChar(255)
   email         String           @unique @db.VarChar(255)
   password      String           @db.VarChar(255)
-  otp           String?
+  otp           String?          @db.VarChar(255)
   otpExpiresAt  DateTime?
   emailVerified Boolean          @default(false)
   categories    UserCategories[]
@@ -34,7 +25,7 @@ model User {
 
 model Categories {
   id             Int              @id @default(autoincrement())
-  name           String
+  name           String           @db.VarChar(255)
   userCategories UserCategories[]
 }
 

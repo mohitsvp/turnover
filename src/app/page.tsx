@@ -90,15 +90,13 @@ export default function Home() {
       add: isChecked,
     }, {
       onSuccess: (response : any) => {
-        console.log('Interest modification successful', response);
+        
       },
       onError: (error : any) => {
-        console.error('Failed to modify interest', error);
+        
       }
     });
   };
-
-  console.log("USER INTERESTS : ", userInterests);
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
