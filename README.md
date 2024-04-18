@@ -1,29 +1,67 @@
-# Create T3 App
+# ECOMMERCE Web Application
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+This project is a web application for an E-commerce platform. It is built using Next.js, a popular React framework, and uses TypeScript for static typing. The application also uses tRPC for type-safe APIs and Prisma as an ORM for database management.
 
-## What's next? How do I make an app with this?
+## Features
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+- User Authentication: Users can register, login, and verify their email.
+- User Interests: Users can mark their interests.
+- Navigation: A navigation bar is present for easy access to different sections of the website.
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+## Project Structure
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Drizzle](https://orm.drizzle.team)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+The project is structured into several directories:
 
-## Learn More
+- `src/app`: Contains the main application code, including components and pages.
+- [src/server](file:///Users/mohitsinghal/others/interviews/turnover/src/server/api/trpc.ts#70%2C6-70%2C6): Contains the server-side code, including the database and API definitions.
+- `src/styles`: Contains global CSS styles.
+- `src/utils`: Contains utility functions, such as for hashing passwords and sending emails.
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+## Running the Project
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+To run the project, you need to have Node.js and npm installed. Then, you can install the project dependencies and start the development server:
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
+### Step 1
 
-## How do I deploy this?
+```bash
+npm install
+```
 
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+### Step 2
+
+Use `.env.example` as reference and create a `.env` file updating all those values there
+
+### Step 3
+
+Run the following commands
+
+```bash
+npx prisma migrate dev
+npx prisma db push
+npx prisma generate
+```
+
+### Step 4
+
+Run the command to add categories in db
+```bash
+npm run seed
+```
+
+### Step 5
+
+To start the server run the following command
+
+```bash
+npm run dev
+```
+
+The application will be available at `http://localhost:3000`.
+
+## Contributing
+
+Contributions are welcome! Please fork the repository and create a pull request with your changes.
+
+## License
+
+This project is licensed under the MIT License.
