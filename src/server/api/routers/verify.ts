@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
+import { generateToken } from "@/utils/auth";
 
 export const verifyRouter = createTRPCRouter({
   verifyOtp: publicProcedure
@@ -22,9 +23,11 @@ export const verifyRouter = createTRPCRouter({
         throw new Error("Invalid OTP.");
       }
 
+      const token = generateToken(user.id);
+
       // Optionally, mark the user's email as verified in the database here
       // For example: await ctx.db.user.update({ where: { email }, data: { isVerified: true } });
 
-      return { success: true, message: "OTP verified successfully." };
+      return { success: true, message: "OTP verified successfully.", token };
     }),
 });

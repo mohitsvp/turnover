@@ -7,6 +7,8 @@ import InputField from "@/app/_ui/InputField";
 import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import { useCookies } from 'react-cookie';
+
 
 export type FormData = {
   email: string;
@@ -18,6 +20,7 @@ const page = () => {
     email: "",
     password: "",
   });
+  const [cookies, setCookie] = useCookies(['authToken']);
   const router = useRouter();
 
   const loginMutation = api.auth.login.useMutation({
@@ -42,12 +45,14 @@ const page = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      loginMutation.mutate({
+      const response : any = await loginMutation.mutateAsync({
         email : formData.email,
         password : formData.password
       })
-      // console.log("Login success:", response);
-      console.log(formData);
+
+      console.log("Login success:", response);
+
+      setCookie('authToken', response?.token, { path: '/' });
       router.push("/")
     } catch (error) {
       console.error("Login error", error)

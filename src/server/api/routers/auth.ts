@@ -4,6 +4,7 @@ import { PrismaClientKnownRequestError } from "@prisma/client";
 import { sendVerificationEmail } from "@/utils/mailer";
 import { randomBytes } from "crypto";
 import { compare } from "bcryptjs";
+import { generateToken } from "@/utils/auth";
 
 export const authRouter = createTRPCRouter({
   register: publicProcedure
@@ -65,7 +66,9 @@ export const authRouter = createTRPCRouter({
       if (!isPasswordValid) {
         throw new Error("Invalid password");
       }
-      // Optionally, generate and return a JWT or session token here
-      return { success: true, message: "Login successful" };
+
+      const token = generateToken(user.id);
+
+      return { success: true, message: "Login successful", token };
     }),
 });
