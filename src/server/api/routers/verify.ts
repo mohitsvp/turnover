@@ -23,7 +23,7 @@ export const verifyRouter = createTRPCRouter({
         throw new Error("Invalid OTP.");
       }
 
-      const token = generateToken(user.id);
+      const token = generateToken(user);
 
       // Optionally, mark the user's email as verified in the database here
       // For example: await ctx.db.user.update({ where: { email }, data: { isVerified: true } });

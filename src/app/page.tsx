@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import Card from "./_components/Card";
 import CheckboxList from "./_components/CheckboxList";
 import { api } from "@/trpc/react";
 import Pagination from "./_components/Pagination";
+import { AuthContext } from "./_context/AuthContext";
 
 interface Interest {
   id: number;
@@ -24,12 +25,13 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState(1);
   const [userInterests, setUserInterests] = useState<userInterest[]>([]);
   const itemsPerPage = 6;
+  const auth = useContext(AuthContext)
 
   const {
     data: userInterestsData,
     error: userInterestsError,
     isLoading: userInterestsLoading,
-  } = api.user.getAllUserInterests.useQuery({ userId: 4 });
+  } = api.user.getAllUserInterests.useQuery({ userId: auth?.user?.id ?? 1 });
 
   useEffect(() => {
     if (userInterestsData) {
@@ -37,13 +39,11 @@ export default function Home() {
     }
     if (userInterestsError) {
       console.error('Failed to fetch user interests', userInterestsError);
-      // Handle error appropriately
     }
   }, [userInterestsData, userInterestsError]);
 
   useEffect(() => {
     if (categories && userInterestsData) {
-      console.log("DATA ", userInterestsData)
       const initialInterests = categories.map((category) => ({
         id: category.id,
         label: category.name,
@@ -57,7 +57,7 @@ export default function Home() {
   const modifyInterestMutation = api.user.modifyInterest.useMutation();
 
   const handleCheckboxChange = (index: number) => (isChecked: boolean) => {
-    const userId = 4;
+    const userId =  auth?.user?.id ?? 1 ;
     const newInterests = interests.map((interest, i) => {
       if (i === index) {
         return { ...interest, checked: isChecked };

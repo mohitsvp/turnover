@@ -67,7 +67,7 @@ export const authRouter = createTRPCRouter({
         throw new Error("Invalid password");
       }
 
-      const token = generateToken(user.id);
+      const token = generateToken(user);
 
       return { success: true, message: "Login successful", token };
     }),
