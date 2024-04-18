@@ -1,6 +1,5 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
-import { PrismaClientKnownRequestError } from "@prisma/client";
 import { sendVerificationEmail } from "@/utils/mailer";
 import { randomBytes } from "crypto";
 import { compare } from "bcryptjs";
@@ -38,10 +37,7 @@ export const authRouter = createTRPCRouter({
 
         return { success: true, user };
       } catch (error: any) {
-        if (
-          error instanceof PrismaClientKnownRequestError &&
-          error.code === "P2002"
-        ) {
+        if (error.code === "P2002") {
           throw new Error("A user with this email already exists.");
         }
         throw new Error("An error occurred while creating the user.");
