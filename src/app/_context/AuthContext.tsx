@@ -13,6 +13,7 @@ export type User = {
 type AuthContextType = {
   user: User | null;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
+  isLoading : boolean;
 };
 
 export const AuthContext = createContext<AuthContextType | undefined>(
@@ -23,6 +24,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [user, setUser] = useState<User | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const [cookies] = useCookies(["authToken"]);
 
   useEffect(() => {
@@ -41,13 +43,14 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         console.error("Failed to decode token:", error);
       }
     }
+    setIsLoading(false);
   }, [cookies.authToken]);
 
-console.log("USER ", user)
+  
 
 
   return (
-    <AuthContext.Provider value={{ user, setUser }}>
+    <AuthContext.Provider value={{ user, setUser, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

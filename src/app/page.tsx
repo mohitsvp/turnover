@@ -6,6 +6,7 @@ import CheckboxList from "./_components/CheckboxList";
 import { api } from "@/trpc/react";
 import Pagination from "./_components/Pagination";
 import { AuthContext } from "./_context/AuthContext";
+import { useRouter } from "next/navigation";
 
 interface Interest {
   id: number;
@@ -20,18 +21,20 @@ interface userInterest {
 }
 
 export default function Home() {
-  const { data: categories, isLoading } = api.category.getAll.useQuery();
+  const { data: categories } = api.category.getAll.useQuery();
   const [interests, setInterests] = useState<Interest[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [userInterests, setUserInterests] = useState<userInterest[]>([]);
   const itemsPerPage = 6;
-  const auth = useContext(AuthContext)
+  const authContext = useContext(AuthContext);
+  const { user, isLoading } = authContext || { user: undefined, isLoading: undefined };
+  const router = useRouter();
 
   const {
     data: userInterestsData,
     error: userInterestsError,
     isLoading: userInterestsLoading,
-  } = api.user.getAllUserInterests.useQuery({ userId: auth?.user?.id ?? 1 });
+  } = api.user.getAllUserInterests.useQuery({ userId: user?.id ?? 1 });
 
   useEffect(() => {
     if (userInterestsData) {
@@ -54,10 +57,17 @@ export default function Home() {
 
   }, [categories]);
 
+
+  useEffect(() => {
+    if (!isLoading && !user) {
+      router.push("/login");
+    }
+  }, [isLoading, user, router]);
+
   const modifyInterestMutation = api.user.modifyInterest.useMutation();
 
   const handleCheckboxChange = (index: number) => (isChecked: boolean) => {
-    const userId =  auth?.user?.id ?? 1 ;
+    const userId =  user?.id ?? 1 ;
     const newInterests = interests.map((interest, i) => {
       if (i === index) {
         return { ...interest, checked: isChecked };
@@ -132,19 +142,3 @@ export default function Home() {
     </main>
   );
 }
-
-// async function CrudShowcase() {
-//   const latestPost = await api.post.getLatest();
-
-//   return (
-//     <div className="w-full max-w-xs">
-//       {latestPost ? (
-//         <p className="truncate">Your most recent post: {latestPost.name}</p>
-//       ) : (
-//         <p>You have no posts yet.</p>
-//       )}
-
-//       <CreatePost />
-//     </div>
-//   );
-// }
