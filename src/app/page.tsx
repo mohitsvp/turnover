@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import Card from "./_components/Card";
 import CheckboxList from "./_components/CheckboxList";
 import { api } from "@/trpc/react";
@@ -12,25 +12,52 @@ interface Interest {
   checked: boolean;
 }
 
+interface userInterest {
+  id : number;
+  categoryId : number;
+  userId : number;
+}
+
 export default function Home() {
   const { data: categories, isLoading } = api.category.getAll.useQuery();
   const [interests, setInterests] = useState<Interest[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
+  const [userInterests, setUserInterests] = useState<userInterest[]>([]);
   const itemsPerPage = 6;
 
+  const {
+    data: userInterestsData,
+    error: userInterestsError,
+    isLoading: userInterestsLoading,
+  } = api.user.getAllUserInterests.useQuery({ userId: 4 });
+
   useEffect(() => {
-    if (categories) {
-      setInterests(
-        categories.map((category) => ({
-          id: category.id,
-          label: category.name,
-          checked: false,
-        })),
-      );
+    if (userInterestsData) {
+      setUserInterests(userInterestsData.map(item => ({ id: item.userId, categoryId: item.categoryId, userId: item.userId })) ?? []);
     }
+    if (userInterestsError) {
+      console.error('Failed to fetch user interests', userInterestsError);
+      // Handle error appropriately
+    }
+  }, [userInterestsData, userInterestsError]);
+
+  useEffect(() => {
+    if (categories && userInterestsData) {
+      console.log("DATA ", userInterestsData)
+      const initialInterests = categories.map((category) => ({
+        id: category.id,
+        label: category.name,
+        checked: userInterestsData.some(ui => ui.categoryId === category.id),
+      }));
+      setInterests(initialInterests);
+    }
+
   }, [categories]);
 
+  const modifyInterestMutation = api.user.modifyInterest.useMutation();
+
   const handleCheckboxChange = (index: number) => (isChecked: boolean) => {
+    const userId = 4;
     const newInterests = interests.map((interest, i) => {
       if (i === index) {
         return { ...interest, checked: isChecked };
@@ -38,10 +65,31 @@ export default function Home() {
       return interest;
     });
     setInterests(newInterests);
-    console.log(`Toggled ${interests[index]?.label}, checked: ${isChecked}`);
+
+    setUserInterests((prev : any) => {
+      if (isChecked) {
+        return [...prev, interests[index]?.id];
+      } else {
+        return prev.filter((id : number) => id !== interests[index]?.id);
+      }
+    });
+
+    modifyInterestMutation.mutate({
+      userId,
+      categoryId: interests[index]?.id ?? 0,
+      add: isChecked,
+    }, {
+      onSuccess: (response : any) => {
+        console.log('Interest modification successful', response);
+      },
+      onError: (error : any) => {
+        console.error('Failed to modify interest', error);
+      }
+    });
   };
 
-  // Calculate current items
+  console.log("USER INTERESTS : ", userInterests);
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = interests.slice(indexOfFirstItem, indexOfLastItem);
@@ -67,7 +115,7 @@ export default function Home() {
                key={interest.id}
                label={interest.label}
                checked={interest.checked}
-               onChange={handleCheckboxChange(interest.id - 1)}
+               onChange={handleCheckboxChange(index + indexOfFirstItem)}
              />
             ))}
           </div>
