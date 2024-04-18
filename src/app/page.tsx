@@ -1,8 +1,10 @@
-"use client"
+"use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Card from "./_components/Card";
 import CheckboxList from "./_components/CheckboxList";
+import { api } from "@/trpc/react";
+import Pagination from "./_components/Pagination";
 
 interface Interest {
   id: number;
@@ -10,15 +12,23 @@ interface Interest {
   checked: boolean;
 }
 
-
 export default function Home() {
+  const { data: categories, isLoading } = api.category.getAll.useQuery();
+  const [interests, setInterests] = useState<Interest[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 6;
 
-  const [interests, setInterests] = useState<Interest[]>([
-    { id: 1, label: 'Shoes', checked: false },
-    { id: 2, label: 'Hats', checked: false },
-    { id: 3, label: 'Watches', checked: false },
-    // Add more interests as needed
-  ]);
+  useEffect(() => {
+    if (categories) {
+      setInterests(
+        categories.map((category) => ({
+          id: category.id,
+          label: category.name,
+          checked: false,
+        })),
+      );
+    }
+  }, [categories]);
 
   const handleCheckboxChange = (index: number) => (isChecked: boolean) => {
     const newInterests = interests.map((interest, i) => {
@@ -29,6 +39,15 @@ export default function Home() {
     });
     setInterests(newInterests);
     console.log(`Toggled ${interests[index]?.label}, checked: ${isChecked}`);
+  };
+
+  // Calculate current items
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = interests.slice(indexOfFirstItem, indexOfLastItem);
+
+  const handlePageChange = (pageNumber: number) => {
+    setCurrentPage(pageNumber);
   };
 
   return (
@@ -43,14 +62,22 @@ export default function Home() {
         <div className="text-left">
           <p>My saved interests!</p>
           <div className="my-[20px]">
-            {interests.map((interest, index) => (
-              <CheckboxList
-                key={interest.id}
-                label={interest.label}
-                checked={interest.checked}
-                onChange={handleCheckboxChange(index)}
-              />
+            {currentItems.map((interest, index) => (
+               <CheckboxList
+               key={interest.id}
+               label={interest.label}
+               checked={interest.checked}
+               onChange={handleCheckboxChange(interest.id - 1)}
+             />
             ))}
+          </div>
+          <div>
+            <Pagination
+              totalItems={interests.length}
+              itemsPerPage={itemsPerPage}
+              currentPage={currentPage}
+              onPageChange={handlePageChange}
+            />
           </div>
         </div>
       </Card>
