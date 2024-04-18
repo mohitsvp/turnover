@@ -14,15 +14,17 @@ const Verification = () => {
   const [otp, setOtp] = useState("");
   const router = useRouter();
   const [cookies, setCookie] = useCookies(['authToken']);
-  const email = "mohit.singhal@masaischool.com";
+  const emailItem = localStorage.getItem("email");
+  const email = emailItem ? JSON.parse(emailItem) : "";
 
   const verifyOtp = api.verify.verifyOtp.useMutation({
     onSuccess: (data : {message : string, token : string}) => {
       setCookie('authToken', data?.token, { path: '/' });
-      router.push("/login")
+      localStorage.removeItem("email")
+      router.push("/")
     },
     onError: (error : any) => {
-      console.log("ERROR ", error)
+      console.error("ERROR ", error)
     }
   })
   
@@ -40,7 +42,7 @@ const Verification = () => {
         </div>
         <div>
           <p className="m-auto w-[70%] my-[40px]">
-            Enter the 8 digit code you have received on anu***@gmail.com
+            Enter the 8 digit code you have received on {email}
           </p>
         </div>
         <div>

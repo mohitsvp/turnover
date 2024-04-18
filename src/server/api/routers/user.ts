@@ -11,8 +11,6 @@ export const userRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { userId, categoryId, add } = input;
 
-        console.log(userId, categoryId, add)
-
       if (add) {
         // Add the interest
         const newUserInterest = await ctx.db.userCategories.create({
