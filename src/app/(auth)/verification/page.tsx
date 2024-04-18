@@ -7,15 +7,18 @@ import OtpField from "@/app/_ui/OtpField";
 import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
+import { useCookies } from 'react-cookie';
+
 
 const Verification = () => {
   const [otp, setOtp] = useState("");
   const router = useRouter();
+  const [cookies, setCookie] = useCookies(['authToken']);
   const email = "mohit.singhal@masaischool.com";
 
   const verifyOtp = api.verify.verifyOtp.useMutation({
-    onSuccess: (data : {message : string}) => {
-      console.log(data.message)
+    onSuccess: (data : {message : string, token : string}) => {
+      setCookie('authToken', data?.token, { path: '/' });
       router.push("/login")
     },
     onError: (error : any) => {
