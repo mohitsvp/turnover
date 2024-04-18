@@ -16,7 +16,7 @@ export type FormData = {
   password: string;
 };
 
-const page = () => {
+const Page = () => {
   const [formData, setFormData] = useState<FormData>({
     email: "",
     password: "",
@@ -32,7 +32,7 @@ const page = () => {
         password: '',
       })
     },
-    onError: (error : any) => {
+    onError: (error) => {
       // Handle error here, for example showing a notification to the user
       console.error("Login error:", error);
     },
@@ -46,7 +46,7 @@ const page = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      const response : any = await loginMutation.mutateAsync({
+      const response : {token : string} = await loginMutation.mutateAsync({
         email : formData.email,
         password : formData.password
       })
@@ -103,4 +103,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;

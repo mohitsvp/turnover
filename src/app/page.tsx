@@ -7,6 +7,7 @@ import { api } from "@/trpc/react";
 import Pagination from "./_components/Pagination";
 import { AuthContext } from "./_context/AuthContext";
 import { useRouter } from "next/navigation";
+import { TRPCClientError } from "@trpc/client";
 
 interface Interest {
   id: number;
@@ -27,7 +28,7 @@ export default function Home() {
   const [userInterests, setUserInterests] = useState<userInterest[]>([]);
   const itemsPerPage = 6;
   const authContext = useContext(AuthContext);
-  const { user, isLoading } = authContext || { user: undefined, isLoading: undefined };
+  const { user, isLoading } = authContext ?? { user: undefined, isLoading: undefined };
   const router = useRouter();
 
   const {
@@ -76,25 +77,18 @@ export default function Home() {
     });
     setInterests(newInterests);
 
-    setUserInterests((prev : any) => {
-      if (isChecked) {
-        return [...prev, interests[index]?.id];
-      } else {
-        return prev.filter((id : number) => id !== interests[index]?.id);
-      }
-    });
+    // setUserInterests((prev : any) => {
+    //   if (isChecked) {
+    //     return [...prev, interests[index]?.id];
+    //   } else {
+    //     return prev.filter((id : number) => id !== interests[index]?.id);
+    //   }
+    // });
 
     modifyInterestMutation.mutate({
       userId,
       categoryId: interests[index]?.id ?? 0,
       add: isChecked,
-    }, {
-      onSuccess: (response : any) => {
-        
-      },
-      onError: (error : any) => {
-        
-      }
     });
   };
 

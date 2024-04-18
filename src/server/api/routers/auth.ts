@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "@/server/api/trpc";
 import { sendVerificationEmail } from "@/utils/mailer";
-import { randomBytes } from "crypto";
 import { compare } from "bcryptjs";
 import { generateToken } from "@/utils/auth";
 
@@ -36,9 +35,12 @@ export const authRouter = createTRPCRouter({
         await sendVerificationEmail(email, otp);
 
         return { success: true, user };
-      } catch (error: any) {
-        if (error.code === "P2002") {
-          throw new Error("A user with this email already exists.");
+      } catch (error  : unknown)  {
+        if (typeof error === 'object' && error !== null && 'code' in error) {
+          const errorCode = (error as { code?: string }).code;
+          if (errorCode === "P2002") {
+            throw new Error("A user with this email already exists.");
+          }
         }
         throw new Error("An error occurred while creating the user.");
       }

@@ -12,7 +12,6 @@ import { ZodError } from "zod";
 
 import { db } from "@/server/db";
 import { hashPassword } from "@/utils/auth";
-import { PrismaClient } from "@prisma/client";
 
 
 /**
