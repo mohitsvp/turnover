@@ -19,7 +19,12 @@ const Verification = () => {
 
   useEffect(() => {
     if (typeof window !== "undefined") {
-      setEmail(JSON.parse(window.localStorage.getItem("email") ?? "") ?? "");
+      let emailFromStorage = window.localStorage.getItem("email");
+      if (typeof emailFromStorage === 'string') {
+        // Remove extra quotes
+        emailFromStorage = emailFromStorage.replace(/"/g, '');
+      }
+      setEmail(emailFromStorage ?? null);
     }
   }, []);
 
