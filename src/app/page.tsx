@@ -93,7 +93,7 @@ export default function Home() {
     setCurrentPage(pageNumber);
   };
 
-  if (isLoading || userInterestsLoading) {
+  if (isLoading ?? userInterestsLoading) {
     return <div><Spinner/></div>;
   }
 
@@ -132,6 +132,8 @@ export default function Home() {
           </div>
         </div>
       </Card>
+
+      <p className="text-center text-red-500">Please note : If data does not come in one go, please refresh multiple times</p>
     </main>
   );
 }

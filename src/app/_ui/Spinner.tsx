@@ -9,7 +9,6 @@ const override: CSSProperties = {
 };
 
 const Spinner = () => {
-    let [loading, setLoading] = useState(true);
     
     return (
         <div className="flex justify-center items-center h-[90vh]">
