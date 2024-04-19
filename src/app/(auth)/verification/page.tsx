@@ -4,20 +4,24 @@ import Card from "@/app/_components/Card";
 import Promotional from "@/app/_components/Promotional";
 import Button from "@/app/_ui/Button";
 import OtpField from "@/app/_ui/OtpField";
+import Spinner from "@/app/_ui/Spinner";
 import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useCookies } from "react-cookie";
 
 const Verification = () => {
   const [otp, setOtp] = useState("");
   const router = useRouter();
   const [cookies, setCookie] = useCookies(["authToken"]);
-  let email: string | null = "";
-  if (typeof window !== "undefined") {
-    email = window.localStorage.getItem("email") ?? "";
-  }
-  // const email : string = emailItem;
+  const [email, setEmail] = useState<string | null>("");
+
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setEmail(JSON.parse(window.localStorage.getItem("email") ?? "") ?? "");
+    }
+  }, []);
 
   const verifyOtp = api.verify.verifyOtp.useMutation({
     onSuccess: (data: { message: string; token: string }) => {
@@ -26,6 +30,7 @@ const Verification = () => {
       router.push("/");
     },
     onError: (error) => {
+      alert(`Error occurred while verifying the OTP: ${error.message}`)
       console.error("ERROR ", error);
     },
   });
@@ -34,6 +39,10 @@ const Verification = () => {
     event.preventDefault();
     verifyOtp.mutate({ email : email ?? "", otp });
   };
+
+  if (verifyOtp.status === 'pending') {
+    return <Spinner/>;
+  }
 
   return (
     <div>

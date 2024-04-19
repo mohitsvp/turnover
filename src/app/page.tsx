@@ -7,7 +7,7 @@ import { api } from "@/trpc/react";
 import Pagination from "./_components/Pagination";
 import { AuthContext } from "./_context/AuthContext";
 import { useRouter } from "next/navigation";
-import { TRPCClientError } from "@trpc/client";
+import Spinner from "./_ui/Spinner";
 
 interface Interest {
   id: number;
@@ -29,6 +29,7 @@ export default function Home() {
   const itemsPerPage = 6;
   const authContext = useContext(AuthContext);
   const { user, isLoading } = authContext ?? { user: undefined, isLoading: undefined };
+  const userId : number | undefined = user?.id;
   const router = useRouter();
 
   const {
@@ -44,7 +45,7 @@ export default function Home() {
     if (userInterestsError) {
       console.error('Failed to fetch user interests', userInterestsError);
     }
-  }, [userInterestsData, userInterestsError]);
+  }, [userInterestsData, userInterestsError, user]);
 
   useEffect(() => {
     if (categories && userInterestsData) {
@@ -56,7 +57,7 @@ export default function Home() {
       setInterests(initialInterests);
     }
 
-  }, [categories]);
+  }, [categories, user]);
 
 
   useEffect(() => {
@@ -77,14 +78,6 @@ export default function Home() {
     });
     setInterests(newInterests);
 
-    // setUserInterests((prev : any) => {
-    //   if (isChecked) {
-    //     return [...prev, interests[index]?.id];
-    //   } else {
-    //     return prev.filter((id : number) => id !== interests[index]?.id);
-    //   }
-    // });
-
     modifyInterestMutation.mutate({
       userId,
       categoryId: interests[index]?.id ?? 0,
@@ -99,6 +92,14 @@ export default function Home() {
   const handlePageChange = (pageNumber: number) => {
     setCurrentPage(pageNumber);
   };
+
+  if (isLoading || userInterestsLoading) {
+    return <div><Spinner/></div>;
+  }
+
+  if (userInterestsError) {
+    return <div>Error: {userInterestsError.message}</div>;
+  }
 
   return (
     <main>
