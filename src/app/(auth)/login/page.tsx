@@ -4,6 +4,7 @@ import Card from "@/app/_components/Card";
 import Promotional from "@/app/_components/Promotional";
 import Button from "@/app/_ui/Button";
 import InputField from "@/app/_ui/InputField";
+import Spinner from "@/app/_ui/Spinner";
 import { api } from "@/trpc/react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -33,7 +34,7 @@ const Page = () => {
       })
     },
     onError: (error) => {
-      // Handle error here, for example showing a notification to the user
+      alert(`Error occured while logging the user ${error.message}`)
       console.error("Login error:", error);
     },
   });
@@ -57,6 +58,10 @@ const Page = () => {
       console.error("Login error", error)
     }
   };
+
+  if (loginMutation.status === "pending") {
+    return <div><Spinner/></div>
+  }
 
   return (
     <div>

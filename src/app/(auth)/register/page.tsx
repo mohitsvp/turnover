@@ -9,6 +9,7 @@ import React, { useState } from "react";
 import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import Spinner from "@/app/_ui/Spinner";
 
 export type FormData = {
   name: string;
@@ -35,7 +36,7 @@ const Register = () => {
       })
     },
     onError: (error) => {
-      // Handle error here, for example showing a notification to the user
+      alert(`Error occurred while registering the user: ${error.message}`)
       console.error("Registration error:", error);
     },
   });
@@ -47,10 +48,10 @@ const Register = () => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     try {
-      registerMutation.mutate({
+      await registerMutation.mutateAsync({
         name: formData.name,
         email: formData.email,
         password: formData.password,
@@ -58,9 +59,13 @@ const Register = () => {
       localStorage.setItem("email", JSON.stringify(formData.email))
       router.push("/verification")
     } catch (error) {
-      console.error("Error in registering the user")
+      console.error("Error in registering the user", error)
     }
   };
+
+  if (registerMutation.status === 'pending') {
+    return <Spinner/>;
+  }
 
   return (
     <div>
